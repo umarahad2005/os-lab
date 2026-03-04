@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Command Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e0d;
+    --surface: #111714;
+    --card: #161d1a;
+    --border: #1f2e28;
+    --accent: #00ff88;
+    --accent2: #00d4ff;
+    --accent3: #ff6b35;
+    --accent4: #c084fc;
+    --text: #e2ffe8;
+    --muted: #5a7a65;
+    --dim: #2a3d32;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  /* Search */
+  .search-wrap {
+    max-width: 500px;
+    margin: 32px auto 0;
+    position: relative;
+  }
+
+  .search-wrap::before {
+    content: '$';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    pointer-events: none;
+  }
+
+  #search {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px 14px 36px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #search::placeholder { color: var(--muted); }
+  #search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,255,136,0.1); }
+
+  /* Grid layout */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+
+  /* Section cards */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .section:hover {
+    border-color: var(--dim);
+    transform: translateY(-2px);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--card);
+    z-index: 2;
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    background: var(--dim);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  /* Commands */
+  .commands { padding: 8px 0; }
+
+  .cmd-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.15s;
+    cursor: default;
+  }
+
+  .cmd-row:last-child { border-bottom: none; }
+  .cmd-row:hover { background: rgba(255,255,255,0.02); }
+
+  .cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 160px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border-left: 2px solid;
+  }
+
+  .desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-top: 3px;
+  }
+
+  .desc em {
+    color: var(--accent);
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(0,255,136,0.08);
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+
+  /* Color themes per section */
+  .c1 .icon { background: rgba(0,255,136,0.1); }
+  .c1 .section-title { color: #00ff88; }
+  .c1 .cmd { color: #00ff88; border-color: #00ff88; background: rgba(0,255,136,0.06); }
+
+  .c2 .icon { background: rgba(0,212,255,0.1); }
+  .c2 .section-title { color: #00d4ff; }
+  .c2 .cmd { color: #00d4ff; border-color: #00d4ff; background: rgba(0,212,255,0.06); }
+
+  .c3 .icon { background: rgba(255,107,53,0.1); }
+  .c3 .section-title { color: #ff6b35; }
+  .c3 .cmd { color: #ff6b35; border-color: #ff6b35; background: rgba(255,107,53,0.06); }
+
+  .c4 .icon { background: rgba(192,132,252,0.1); }
+  .c4 .section-title { color: #c084fc; }
+  .c4 .cmd { color: #c084fc; border-color: #c084fc; background: rgba(192,132,252,0.06); }
+
+  .c5 .icon { background: rgba(250,204,21,0.1); }
+  .c5 .section-title { color: #facc15; }
+  .c5 .cmd { color: #facc15; border-color: #facc15; background: rgba(250,204,21,0.06); }
+
+  .c6 .icon { background: rgba(251,113,133,0.1); }
+  .c6 .section-title { color: #fb7185; }
+  .c6 .cmd { color: #fb7185; border-color: #fb7185; background: rgba(251,113,133,0.06); }
+
+  .c7 .icon { background: rgba(52,211,153,0.1); }
+  .c7 .section-title { color: #34d399; }
+  .c7 .cmd { color: #34d399; border-color: #34d399; background: rgba(52,211,153,0.06); }
+
+  .c8 .icon { background: rgba(99,179,237,0.1); }
+  .c8 .section-title { color: #63b3ed; }
+  .c8 .cmd { color: #63b3ed; border-color: #63b3ed; background: rgba(99,179,237,0.06); }
+
+  /* Pro tips */
+  .tips-section {
+    margin-top: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .tips-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent3);
+  }
+
+  .tips-header span:first-child { font-size: 1.2rem; }
+  .tips-header .t { font-size: 0.85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .tip {
+    background: var(--card);
+    padding: 16px 20px;
+  }
+
+  .tip-label {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .tip-text {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .tip-text code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(0,255,136,0.08);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 0.75rem;
+  }
+
+  /* Hidden state */
+  .hidden { display: none !important; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.15s; }
+  .section:nth-child(4) { animation-delay: 0.2s; }
+  .section:nth-child(5) { animation-delay: 0.25s; }
+  .section:nth-child(6) { animation-delay: 0.3s; }
+  .section:nth-child(7) { animation-delay: 0.35s; }
+  .section:nth-child(8) { animation-delay: 0.4s; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 0 20px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+  }
+
+  footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge">// Terminal Mastery</div>
+    <h1>Linux Commands</h1>
+    <p class="subtitle">$ your complete reference cheatsheet</p>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="search commands..." autocomplete="off" spellcheck="false">
+    </div>
+  </header>
+
+  <div class="grid" id="grid">
+
+    <!-- FILE & DIRECTORY -->
+    <div class="section c1">
+      <div class="section-header">
+        <div class="icon">📁</div>
+        <span class="section-title">Files & Directories</span>
+        <span class="count">12</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">ls</span><span class="desc">List directory contents. Use <em>ls -la</em> for hidden files + details</span></div>
+        <div class="cmd-row"><span class="cmd">ls -la</span><span class="desc">Long listing with hidden files, permissions, size, owner</span></div>
+        <div class="cmd-row"><span class="cmd">cd /path</span><span class="desc">Change directory. <em>cd ~</em> goes home, <em>cd ..</em> goes up one level</span></div>
+        <div class="cmd-row"><span class="cmd">pwd</span><span class="desc">Print working directory — shows your current path</span></div>
+        <div class="cmd-row"><span class="cmd">mkdir dir</span><span class="desc">Create directory. Use <em>mkdir -p a/b/c</em> to create nested dirs</span></div>
+        <div class="cmd-row"><span class="cmd">rmdir dir</span><span class="desc">Remove empty directory</span></div>
+        <div class="cmd-row"><span class="cmd">rm file</span><span class="desc">Delete file. <em>rm -rf dir</em> removes directories recursively (careful!)</span></div>
+        <div class="cmd-row"><span class="cmd">cp src dest</span><span class="desc">Copy file. <em>cp -r</em> to copy directories recursively</span></div>
+        <div class="cmd-row"><span class="cmd">mv src dest</span><span class="desc">Move or rename a file/directory</span></div>
+        <div class="cmd-row"><span class="cmd">touch file</span><span class="desc">Create empty file or update timestamp of existing file</span></div>
+        <div class="cmd-row"><span class="cmd">find / -name x</span><span class="desc">Find files by name. <em>find . -type f -name "*.txt"</em> finds all txt files</span></div>
+        <div class="cmd-row"><span class="cmd">tree</span><span class="desc">Display directory structure as a tree (install if missing)</span></div>
+      </div>
+    </div>
+
+    <!-- FILE VIEWING -->
+    <div class="section c2">
+      <div class="section-header">
+        <div class="icon">👁️</div>
+        <span class="section-title">Viewing Files</span>
+        <span class="count">9</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">cat file</span><span class="desc">Print entire file to terminal. Good for small files</span></div>
+        <div class="cmd-row"><span class="cmd">less file</span><span class="desc">Scroll through file. Press <em>q</em> to quit, <em>/word</em> to search</span></div>
+        <div class="cmd-row"><span class="cmd">more file</span><span class="desc">Page through file (older, less features than less)</span></div>
+        <div class="cmd-row"><span class="cmd">head -n 20 file</span><span class="desc">Show first 20 lines of a file</span></div>
+        <div class="cmd-row"><span class="cmd">tail -n 20 file</span><span class="desc">Show last 20 lines. <em>tail -f</em> follows file in real-time</span></div>
+        <div class="cmd-row"><span class="cmd">wc -l file</span><span class="desc">Count lines. <em>wc -w</em> counts words, <em>wc -c</em> counts bytes</span></div>
+        <div class="cmd-row"><span class="cmd">grep "text" file</span><span class="desc">Search for text. <em>grep -r "text" .</em> searches recursively</span></div>
+        <div class="cmd-row"><span class="cmd">diff file1 file2</span><span class="desc">Show differences between two files line by line</span></div>
+        <div class="cmd-row"><span class="cmd">file filename</span><span class="desc">Detect file type (text, binary, image, etc.)</span></div>
+      </div>
+    </div>
+
+    <!-- PERMISSIONS -->
+    <div class="section c3">
+      <div class="section-header">
+        <div class="icon">🔒</div>
+        <span class="section-title">Permissions</span>
+        <span class="count">8</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">chmod 755 file</span><span class="desc">Set permissions: <em>7=rwx, 5=r-x, 4=r--</em>. Owner/group/others</span></div>
+        <div class="cmd-row"><span class="cmd">chmod +x file</span><span class="desc">Add execute permission to file (make it runnable)</span></div>
+        <div class="cmd-row"><span class="cmd">chown user file</span><span class="desc">Change file owner. <em>chown user:group file</em> changes both</span></div>
+        <div class="cmd-row"><span class="cmd">chgrp group file</span><span class="desc">Change group ownership of a file</span></div>
+        <div class="cmd-row"><span class="cmd">umask 022</span><span class="desc">Set default permission mask for new files</span></div>
+        <div class="cmd-row"><span class="cmd">sudo command</span><span class="desc">Run command as superuser (root)</span></div>
+        <div class="cmd-row"><span class="cmd">su username</span><span class="desc">Switch to another user account</span></div>
+        <div class="cmd-row"><span class="cmd">whoami</span><span class="desc">Display the current logged-in username</span></div>
+      </div>
+    </div>
+
+    <!-- PROCESS MANAGEMENT -->
+    <div class="section c4">
+      <div class="section-header">
+        <div class="icon">⚙️</div>
+        <span class="section-title">Process Management</span>
+        <span class="count">10</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">ps aux</span><span class="desc">List all running processes with PID, CPU, memory usage</span></div>
+        <div class="cmd-row"><span class="cmd">top</span><span class="desc">Real-time process viewer. Press <em>q</em> to quit, <em>k</em> to kill</span></div>
+        <div class="cmd-row"><span class="cmd">htop</span><span class="desc">Interactive process viewer (nicer than top, may need install)</span></div>
+        <div class="cmd-row"><span class="cmd">kill PID</span><span class="desc">Kill process by PID. <em>kill -9 PID</em> force kills immediately</span></div>
+        <div class="cmd-row"><span class="cmd">killall name</span><span class="desc">Kill all processes with a given name</span></div>
+        <div class="cmd-row"><span class="cmd">bg</span><span class="desc">Send paused process to background</span></div>
+        <div class="cmd-row"><span class="cmd">fg</span><span class="desc">Bring background process to foreground</span></div>
+        <div class="cmd-row"><span class="cmd">jobs</span><span class="desc">List background and paused jobs in current session</span></div>
+        <div class="cmd-row"><span class="cmd">nohup cmd &amp;</span><span class="desc">Run command in background, immune to hangups</span></div>
+        <div class="cmd-row"><span class="cmd">nice -n 10 cmd</span><span class="desc">Run command with lower priority (10 = lower, -10 = higher)</span></div>
+      </div>
+    </div>
+
+    <!-- NETWORKING -->
+    <div class="section c5">
+      <div class="section-header">
+        <div class="icon">🌐</div>
+        <span class="section-title">Networking</span>
+        <span class="count">11</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">ping host</span><span class="desc">Test connectivity to a host. <em>Ctrl+C</em> to stop</span></div>
+        <div class="cmd-row"><span class="cmd">ifconfig</span><span class="desc">Show network interface info (use <em>ip addr</em> on modern systems)</span></div>
+        <div class="cmd-row"><span class="cmd">ip addr</span><span class="desc">Show all IP addresses and network interfaces</span></div>
+        <div class="cmd-row"><span class="cmd">netstat -tulpn</span><span class="desc">List open ports and listening services</span></div>
+        <div class="cmd-row"><span class="cmd">ss -tulpn</span><span class="desc">Modern replacement for netstat — shows socket stats</span></div>
+        <div class="cmd-row"><span class="cmd">curl URL</span><span class="desc">Make HTTP requests. <em>curl -O URL</em> downloads a file</span></div>
+        <div class="cmd-row"><span class="cmd">wget URL</span><span class="desc">Download files from web. Supports recursive downloads</span></div>
+        <div class="cmd-row"><span class="cmd">ssh user@host</span><span class="desc">Connect to remote server via SSH</span></div>
+        <div class="cmd-row"><span class="cmd">scp src user@h:dest</span><span class="desc">Securely copy files to/from remote host</span></div>
+        <div class="cmd-row"><span class="cmd">traceroute host</span><span class="desc">Show network hops to reach a destination</span></div>
+        <div class="cmd-row"><span class="cmd">nslookup domain</span><span class="desc">Query DNS records for a domain name</span></div>
+      </div>
+    </div>
+
+    <!-- DISK & SYSTEM -->
+    <div class="section c6">
+      <div class="section-header">
+        <div class="icon">💾</div>
+        <span class="section-title">Disk & System Info</span>
+        <span class="count">10</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">df -h</span><span class="desc">Show disk space usage in human-readable format</span></div>
+        <div class="cmd-row"><span class="cmd">du -sh dir</span><span class="desc">Show total size of a directory. <em>du -sh *</em> sizes of all items</span></div>
+        <div class="cmd-row"><span class="cmd">free -h</span><span class="desc">Show RAM and swap usage in human-readable format</span></div>
+        <div class="cmd-row"><span class="cmd">uname -a</span><span class="desc">Show system info: kernel, hostname, architecture</span></div>
+        <div class="cmd-row"><span class="cmd">uptime</span><span class="desc">Show how long system has been running and load avg</span></div>
+        <div class="cmd-row"><span class="cmd">lscpu</span><span class="desc">Display CPU architecture and core information</span></div>
+        <div class="cmd-row"><span class="cmd">lsblk</span><span class="desc">List block devices (disks and partitions)</span></div>
+        <div class="cmd-row"><span class="cmd">mount /dev/x /mnt</span><span class="desc">Mount a device to a directory</span></div>
+        <div class="cmd-row"><span class="cmd">umount /mnt</span><span class="desc">Unmount a mounted device or filesystem</span></div>
+        <div class="cmd-row"><span class="cmd">dmesg | tail</span><span class="desc">View kernel log messages (hardware events, errors)</span></div>
+      </div>
+    </div>
+
+    <!-- TEXT PROCESSING -->
+    <div class="section c7">
+      <div class="section-header">
+        <div class="icon">✂️</div>
+        <span class="section-title">Text Processing</span>
+        <span class="count">10</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">grep -i "pat" f</span><span class="desc">Case-insensitive search. <em>-v</em> inverts (shows non-matching)</span></div>
+        <div class="cmd-row"><span class="cmd">sed 's/a/b/g' f</span><span class="desc">Replace 'a' with 'b' globally in file. <em>-i</em> edits in place</span></div>
+        <div class="cmd-row"><span class="cmd">awk '{print $1}' f</span><span class="desc">Print first column. <em>awk -F: '{print $1}'</em> uses : as delimiter</span></div>
+        <div class="cmd-row"><span class="cmd">sort file</span><span class="desc">Sort lines alphabetically. <em>sort -n</em> sorts numerically</span></div>
+        <div class="cmd-row"><span class="cmd">uniq file</span><span class="desc">Remove duplicate adjacent lines. Use after <em>sort</em></span></div>
+        <div class="cmd-row"><span class="cmd">cut -d: -f1 f</span><span class="desc">Cut field 1 from each line using : as delimiter</span></div>
+        <div class="cmd-row"><span class="cmd">tr 'a-z' 'A-Z'</span><span class="desc">Translate characters — converts lowercase to uppercase</span></div>
+        <div class="cmd-row"><span class="cmd">echo "text"</span><span class="desc">Print text to terminal. Use with <em>&gt;</em> to write to file</span></div>
+        <div class="cmd-row"><span class="cmd">tee file</span><span class="desc">Read stdin and write to both file and stdout simultaneously</span></div>
+        <div class="cmd-row"><span class="cmd">xargs</span><span class="desc">Build commands from stdin. <em>find . -name x | xargs rm</em></span></div>
+      </div>
+    </div>
+
+    <!-- PACKAGES & SHELL -->
+    <div class="section c8">
+      <div class="section-header">
+        <div class="icon">📦</div>
+        <span class="section-title">Package & Shell</span>
+        <span class="count">11</span>
+      </div>
+      <div class="commands">
+        <div class="cmd-row"><span class="cmd">apt install pkg</span><span class="desc">Install package (Debian/Ubuntu). Use <em>sudo apt install</em></span></div>
+        <div class="cmd-row"><span class="cmd">apt update</span><span class="desc">Refresh package lists from repositories</span></div>
+        <div class="cmd-row"><span class="cmd">apt upgrade</span><span class="desc">Upgrade all installed packages to latest versions</span></div>
+        <div class="cmd-row"><span class="cmd">apt remove pkg</span><span class="desc">Uninstall a package. <em>apt purge</em> also removes config files</span></div>
+        <div class="cmd-row"><span class="cmd">yum install pkg</span><span class="desc">Install package on RHEL/CentOS/Fedora systems</span></div>
+        <div class="cmd-row"><span class="cmd">history</span><span class="desc">Show command history. <em>!n</em> runs command #n again</span></div>
+        <div class="cmd-row"><span class="cmd">alias ll='ls -la'</span><span class="desc">Create a shortcut for a command</span></div>
+        <div class="cmd-row"><span class="cmd">export VAR=val</span><span class="desc">Set environment variable for current session</span></div>
+        <div class="cmd-row"><span class="cmd">source ~/.bashrc</span><span class="desc">Reload shell config without restarting terminal</span></div>
+        <div class="cmd-row"><span class="cmd">which cmd</span><span class="desc">Show full path of a command executable</span></div>
+        <div class="cmd-row"><span class="cmd">man command</span><span class="desc">Open manual page for any command. Press <em>q</em> to quit</span></div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- Pro Tips -->
+  <div class="tips-section">
+    <div class="tips-header">
+      <span>⚡</span>
+      <span class="t">Power User Tips</span>
+    </div>
+    <div class="tips-grid">
+      <div class="tip">
+        <div class="tip-label">Pipes</div>
+        <div class="tip-text">Chain commands with <code>|</code>: <code>ps aux | grep nginx | awk '{print $2}'</code> — output of one becomes input of next.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-label">Redirection</div>
+        <div class="tip-text">Use <code>&gt;</code> to write to file, <code>&gt;&gt;</code> to append, <code>2&gt;</code> for errors, <code>&amp;&gt;</code> for both stdout+stderr.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-label">Ctrl Shortcuts</div>
+        <div class="tip-text"><code>Ctrl+C</code> kills, <code>Ctrl+Z</code> pauses, <code>Ctrl+D</code> logs out, <code>Ctrl+L</code> clears screen, <code>Ctrl+R</code> searches history.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-label">Wildcards</div>
+        <div class="tip-text"><code>*</code> matches anything, <code>?</code> matches one char. Example: <code>rm *.log</code> deletes all .log files.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-label">Background Jobs</div>
+        <div class="tip-text">Append <code>&amp;</code> to run in background: <code>./script.sh &amp;</code>. Use <code>jobs</code> and <code>fg %1</code> to manage them.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-label">Tab Completion</div>
+        <div class="tip-text">Press <code>Tab</code> to auto-complete commands and paths. Double-tap <code>Tab</code> to see all options when ambiguous.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Linux</span> Command Reference — use <span>man &lt;command&gt;</span> to go deeper on any command
+  </footer>
+</div>
+
+<script>
+  const search = document.getElementById('search');
+  const rows = document.querySelectorAll('.cmd-row');
+  const sections = document.querySelectorAll('.section');
+
+  search.addEventListener('input', () => {
+    const q = search.value.toLowerCase().trim();
+
+    if (!q) {
+      rows.forEach(r => r.classList.remove('hidden'));
+      sections.forEach(s => s.classList.remove('hidden'));
+      return;
+    }
+
+    sections.forEach(section => {
+      const sectionRows = section.querySelectorAll('.cmd-row');
+      let visible = 0;
+      sectionRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(q)) {
+          row.classList.remove('hidden');
+          visible++;
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+      section.classList.toggle('hidden', visible === 0);
+    });
+  });
+</script>
+</body>
+</html>
