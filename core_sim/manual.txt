@@ -1,0 +1,1005 @@
+    RIPHAH INTERNATIONAL UNIVERSITY,
+                          LAHORE
+
+         Riphah School of Computing and Innovation Lahore
+
+            Operating Systems
+             Project Roadmap
+
+                         Instructor: Engr. Amna Bibi
+                         Office: A6, 2nd Floor, Block A
+                         Office Hours: Tuesday 10:00-12:00
+
+1|Page
+Operating Systems Project Manual: OS
+Kernel Simulation
+
+1. Introduction
+
+This project requires you to design and develop a simulation of an Operating System kernel.
+The goal is to visually demonstrate key OS concepts such as process management,
+scheduling, memory management, and inter-process communication.
+
+2. Objectives
+
+- Understand OS internal working
+- Implement scheduling algorithms
+- Simulate memory management
+- Demonstrate synchronization and IPC
+
+3. Technology Selection
+
+Recommended:
+     Java (Swing/JavaFX)
+     C# (Windows Forms)
+    Avoid:
+    - Pure C/C++ without GUI
+    - Web-based implementations (unless advanced)
+
+4. Project Phases
+
+Phase 1: Control Panel & PCB
+
+Create GUI with buttons:
+- Create Process
+- Destroy Process
+- Suspend/Resume
+
+2|Page
+PCB must include:
+- PID, State, Priority
+
+Phase 2: Scheduling
+
+Implement:
+- FCFS
+- Round Robin
+Optimal Recommendations:
+
+     FCFS with Round Robin
+     SJF with Multilevel Feedback Queue
+Display Ready Queue and process states
+3|Page
+Phase 3: Memory Management
+
+Implement Paging and LRU replacement.
+Visualize memory blocks and page allocation.
+
+Phase 4: Synchronization & IPC
+
+Implement:
+- Semaphore
+- Message Passing or Shared Memory
+
+5. GUI Requirements
+
+- Dashboard
+- Process Table
+- Queue View
+- Memory Visualization
+- Gantt Chart
+
+6. Sample Output
+
+Example:
+Process Table:
+PID | State | Burst | Remaining
+1 | Ready | 5 | 5
+Ready Queue:
+P1 -> P2 -> P3
+Gantt Chart:
+P1 | P2 | P1
+
+4|Page
+Sample Output Screenshots
+5|Page
+7. Evaluation Criteria
+
+- Functionality (30%)
+- GUI (20%)
+- Concepts (20%)
+- Code Quality (15%)
+- Innovation (15%)
+
+6|Page
+ Module 1: Process Control Block (PCB) & Process Management Design
+
+ 1. Objective of This Module
+In this module, you will design and implement the foundation of your OS simulation,
+which is:
+
+     Process creation and management
+     Process Control Block (PCB) structure
+     Basic process operations
+     GUI control panel for interaction
+ This module is the base of your entire project. All future phases depend on it.
+
+ 2. Conceptual Understanding (Before Coding)
+Before you start coding, make sure you understand:
+
+What is a Process?
+A process is a program in execution.
+Example:
+
+     Opening Chrome  Process created
+     Running a program  Process running
+
+What is PCB (Process Control Block)?
+A PCB is a data structure used by the OS to store information about a process.
+
+ Think of PCB as a record file of a process
+
+3. PCB Structure Design (Mandatory)
+You must create a PCB class/structure in your program.
+
+7|Page
+ Required Fields                       Description
+                    Unique process ID
+       Attribute    New, Ready, Running, Waiting, Terminated
+PID                 Process priority
+State               ID of parent
+Priority            List of child PIDs
+Parent Process      Memory needed
+Child Processes     Simulated values
+Memory Requirement  Waiting / Active
+CPU Registers
+I/O Status
+
+Example (Java)
+
+class PCB {
+       int pid;
+       String state;
+       int priority;
+       int parentId;
+       List<Integer> children;
+       int memory;
+
+       public PCB(int pid) {
+              this.pid = pid;
+              this.state = "New";
+              this.priority = 1;
+              this.children = new ArrayList<>();
+
+       }
+}
+
+4. GUI Design Requirements
+
+You must design a Control Panel Dashboard.
+
+Main Screen Must Include:
+
+     Buttons:
+             o Create Process
+             o Destroy Process
+             o Suspend Process
+             o Resume Process
+             o Block Process
+             o Wakeup Process
+             o Change Priority
+
+     Display Area:
+             o Process Table (list of all PCBs)
+
+8|Page
+Process Table Example  Memory
+                       128MB
+PID State Priority     256MB
+1 Ready 2
+2 Running 1
+
+5. Process States (Very Important)
+You must implement these states:
+
+New  Ready  Running  Waiting  Terminated
+
+Required Transitions
+
+Operation             Result
+
+Create     New  Ready
+Dispatch   Ready  Running
+Block      Running  Waiting
+Wakeup     Waiting  Ready
+Terminate  Running  Terminated
+
+6. Process Operations (Implementation Tasks)
+You must implement the following functions:
+
+ 6.1 Create Process
+
+     Generate unique PID
+     Create PCB
+     Set state = Ready
+     Add to process list
+
+ Output:
+
+Process P1 created  State: Ready
+
+ 6.2 Destroy Process
+
+     Select process
+     Change state to Terminated
+     Remove from queues
+
+9|Page
+ 6.3 Suspend Process
+     Change state to Suspended / Waiting
+
+ 6.4 Resume Process
+     Move process back to Ready state
+
+ 6.5 Block Process
+     Move Running  Waiting
+
+ 6.6 Wakeup Process
+     Move Waiting  Ready
+
+ 6.7 Change Priority
+     Allow user input
+     Update PCB
+
+7. Data Structures You Must Use
+
+ Required:
+     List / ArrayList  Store all PCBs
+     Queue  Ready Queue
+     (Optional) Waiting Queue
+
+8. Sample Execution Scenario
+
+Step-by-Step Example:
+    1. Click "Create Process"
+
+     2. P1 created  Ready
+
+10 | P a g e
+    3. Click "Create Process"
+
+     4. P2 created  Ready
+
+    5. Dispatch P1
+
+     6. P1  Running
+
+    7. Block P1
+
+     8. P1  Waiting
+
+    9. Wakeup P1
+
+     10. P1  Ready
+
+9. What You Must Show in Demo
+
+During evaluation, you must demonstrate:
+
+ Process creation
+ PCB display
+ State transitions
+ Multiple processes
+ Priority change
+
+ 10. Common Mistakes to Avoid
+
+ Not updating process state properly
+ No GUI display (only backend logic)
+ Hardcoding values
+ No separation of logic and UI
+ Missing PCB attributes
+
+11. Design Tips (Important)
+
+     Keep PCB class separate
+     Use functions for each operation
+     Update GUI after every action
+     Use clear naming (P1, P2, etc.)
+
+ 12. Deliverables for Module 1
+
+You must submit:
+
+11 | P a g e
+Code
+     GUI + PCB + Process operations
+
+Screenshots
+     Control panel
+     Process table
+
+ Short Report (1­2 pages)
+     What you implemented
+     How it works
+
+12 | P a g e
+ Module 2: Process Scheduling Design & Implementation
+
+ 1. Objective of This Module
+In this module, you will implement the CPU scheduling component of your OS
+simulation.
+You will learn to:
+
+     Select processes for execution
+     Implement scheduling algorithms
+     Manage process queues
+     Visualize CPU execution (Gantt chart)
+ This module is the core logic of your OS simulator
+
+ 2. Conceptual Understanding
+
+ What is Scheduling?
+Scheduling is the process of selecting a process from the ready queue and allocating
+CPU to it.
+
+ OS decides:
+"Which process should run next?"
+
+ Why Scheduling is Important?
+     Efficient CPU usage
+     Fairness among processes
+     Reduced waiting time
+     Improved performance
+
+13 | P a g e
+3. Process States in Scheduling
+You must now actively use states defined in Module 1:
+
+Ready  Running  Waiting  Ready  Terminated
+
+4. Required Data Structures
+
+You must extend your Module 1 design:
+
+Mandatory Structures
+
+Structure             Purpose
+
+Ready Queue Stores processes waiting for CPU
+Running Process Currently executing process
+Waiting Queue Blocked processes
+
+Example (Java)
+
+Queue<PCB> readyQueue = new LinkedList<>();
+Queue<PCB> waitingQueue = new LinkedList<>();
+PCB runningProcess = null;
+
+5. Scheduling Algorithms to Implement
+
+5.1 First Come First Serve (FCFS)
+
+Logic
+
+    First process in queue executes first
+    Non-preemptive
+
+Execution Flow
+
+Ready Queue: P1  P2  P3
+Execution:
+P1  P2  P3
+
+Implementation Idea
+
+PCB p = readyQueue.poll();
+runningProcess = p;
+p.state = "Running";
+
+14 | P a g e
+Sample Output
+Time Process
+0­4 P1
+4­7 P2
+7­10 P3
+
+ 5.2 Round Robin (RR)
+
+Logic
+
+     Each process gets fixed time quantum
+     Preemptive scheduling
+
+Example
+
+Time Quantum = 2
+
+P1(5), P2(3), P3(2)
+Execution:
+P1  P2  P3  P1  P2  P1
+
+Implementation Idea
+
+int timeQuantum = 2;
+while (!readyQueue.isEmpty()) {
+
+       PCB p = readyQueue.poll();
+       p.state = "Running";
+       int execTime = Math.min(timeQuantum, p.remainingTime);
+       p.remainingTime -= execTime;
+       if (p.remainingTime > 0) {
+
+              p.state = "Ready";
+              readyQueue.add(p);
+       } else {
+              p.state = "Terminated";
+       }
+}
+
+6. GUI Requirements for Scheduling
+
+You must extend your GUI from Module 1.
+
+15 | P a g e
+Required Components
+
+Buttons
+
+    Run FCFS
+    Run Round Robin
+    Step Execution (optional)
+
+Displays
+
+1. Ready Queue Visualization
+
+P1  P2  P3
+
+2. Running Process Display
+
+Currently Running: P1
+
+3. Gantt Chart (Very Important)
+
+| P1 | P2 | P3 | P1 | P2 |
+
+4. Process Table (Updated)
+
+PID State Burst Remaining
+
+1 Running 5   3
+
+7. Gantt Chart Implementation
+
+ Purpose
+To visually show execution order
+
+Simple Approach
+Use:
+
+     List / Table / Labels
+
+ganttList.add("P" + p.pid);
+
+16 | P a g e
+8. Sample Execution Scenario
+
+Input:   Burst Time
+         5
+Process  3
+P1       2
+P2
+P3
+
+Round Robin (TQ = 2)
+Execution:
+
+P1  P2  P3  P1  P2  P1
+
+State Changes:
+
+     P1: Ready  Running  Ready  Running  Terminated
+     P2: Ready  Running  Ready  Terminated
+     P3: Ready  Running  Terminated
+
+9. Performance Metrics (Optional but Recommended)
+
+You can enhance your project by calculating:
+ Waiting Time
+
+Time spent in ready queue
+ Turnaround Time
+
+Completion Time - Arrival Time
+
+10. Demo Requirements
+
+You MUST demonstrate:
+ FCFS execution
+ Round Robin execution
+ Queue updates
+ Process state changes
+ Gantt chart visualization
+
+17 | P a g e
+ 11. Common Mistakes
+
+ Not updating remaining time
+ Not re-adding process in RR
+ No visualization of queue
+ Incorrect state transitions
+ Infinite loop in scheduling
+
+12. Design Tips
+     Use separate Scheduler class
+     Keep algorithm logic independent
+     Update GUI after each step
+     Use delay (Thread.sleep) for visualization
+
+ 13. Deliverables for Module 2
+
+Code
+     Scheduling algorithms
+     Queue handling
+     Gantt chart
+
+Screenshots
+     Ready Queue
+     Gantt Chart
+     Running process
+
+ Report (1­2 pages)
+     Algorithm explanation
+     Implementation details
+
+18 | P a g e
+ Module 3: Memory Management (Paging & LRU)
+
+ 1. Objective of This Module
+In this module, you will simulate how an OS:
+
+     Allocates memory to processes
+     Divides memory into pages
+     Handles page faults
+     Replaces pages using LRU (Least Recently Used)
+ This module adds visual depth to your project.
+
+ 2. Conceptual Understanding
+
+ What is Memory Management?
+Memory management is the process of:
+
+     Allocating memory to processes
+     Tracking memory usage
+     Replacing memory when full
+
+ What is Paging?
+Paging divides memory into:
+
+     Pages (logical memory)
+     Frames (physical memory)
+ Pages are mapped to frames
+
+19 | P a g e
+3. Paging Concept (Diagram)
+
+Explanation:
+
+     Process is divided into pages: P0, P1, P2
+     Memory has frames: F0, F1, F2
+     OS maps pages  frames
+
+4. Memory Structure in Your Project
+You will simulate memory as:
+
+[ Frame 0 ][ Frame 1 ][ Frame 2 ][ Frame 3 ] ...
+
+Example Representation
+
+String[] memory = new String[10]; // 10 frames
+
+5. Page Table Design
+
+Each process must have a page table
+
+Example
+
+Page  Frame
+0     3
+1     1
+2     5
+
+Example (Java)
+
+Map<Integer, Integer> pageTable = new HashMap<>();
+
+6. Memory Allocation (Paging)
+
+ Step-by-Step
+
+    1. Process requests memory
+    2. Divide into pages
+    3. Find free frames
+    4. Assign frames
+    5. Update page table
+
+20 | P a g e
+Example
+Process P1 needs 3 pages:
+
+Memory:
+[ P1 ][ P1 ][ P1 ][ Free ][ Free ]
+
+7. GUI Requirements
+You MUST visualize memory clearly.
+
+Required Components
+ Memory Blocks Panel
+
+[ P1 ][ P2 ][ Free ][ P3 ][ P1 ]
+
+ Page Table Display
+
+P1:
+Page 0  Frame 0
+Page 1  Frame 4
+
+ Logs Panel (Recommended)
+
+Page Fault in P2  Replacing Page
+
+8. Page Fault Concept
+
+ What is Page Fault?
+Occurs when:
+Required page is NOT in memory
+
+Example
+
+Memory: [ P1 ][ P2 ][ P3 ]
+Request: P4  Not found  Page Fault
+
+21 | P a g e
+9. Page Replacement (LRU Algorithm)
+ What is LRU?
+Least Recently Used page is replaced first.
+
+Example
+Memory size = 3
+Reference String:
+
+P1  P2  P3  P1  P4
+
+Step-by-Step
+
+Step  Memory      Action
+P1    P1 _ _    Load
+P2    P1 P2 _   Load
+P3    P1 P2 P3  Load
+P1    P1 P2 P3  Hit
+P4    P1 P4 P3  Replace P2
+
+LRU Diagram
+
+Before:
+[ P1 ][ P2 ][ P3 ]
+
+After P4:
+[ P1 ][ P4 ][ P3 ]
+
+             replaced (least recently used)
+
+10. LRU Implementation Idea
+
+List<Integer> memory = new ArrayList<>();
+Map<Integer, Integer> lastUsed = new HashMap<>();
+int time = 0;
+
+for (int page : referenceString) {
+       time++;
+
+       if (!memory.contains(page)) {
+              if (memory.size() < capacity) {
+                     memory.add(page);
+              } else {
+                     int lru = Collections.min(lastUsed.entrySet(),
+                             Map.Entry.comparingByValue()).getKey();
+
+22 | P a g e
+                     memory.remove((Integer) lru);
+                     memory.add(page);
+              }
+       }
+       lastUsed.put(page, time);
+}
+
+11. Sample Execution Scenario
+
+Input:
+
+     Memory size = 3
+     Pages: P1, P2, P3, P1, P4
+
+Output:
+
+P1  Fault
+P2  Fault
+P3  Fault
+P1  Hit
+P4  Fault (replace P2)
+
+12. Demo Requirements
+
+You MUST show:
+
+ Memory allocation
+ Page table creation
+ Page fault occurrence
+ LRU replacement
+ Visual memory changes
+
+ 13. Common Mistakes
+
+ No page table
+ No visualization
+ Wrong LRU logic
+ Not handling full memory
+ No page fault indication
+
+23 | P a g e
+14. Design Tips
+     Use array for memory
+     Use map for page table
+     Update GUI after each operation
+     Highlight replaced frame visually
+
+ 15. Deliverables for Module 3
+
+Code
+     Paging + LRU implementation
+
+Screenshots
+     Memory panel
+     Page table
+     Replacement step
+
+ Report (1­2 pages)
+     Paging explanation
+     LRU working
+     Example run
+
+24 | P a g e
+ Module 4: Synchronization & Inter-Process Communication (IPC)
+
+ 1. Objective of This Module
+In this module, you will simulate how processes:
+
+     Share resources safely
+     Avoid conflicts (race conditions)
+     Communicate with each other
+ This is the final logical layer of your OS simulation.
+
+ 2. Conceptual Understanding
+
+ What is Process Synchronization?
+Synchronization ensures:
+Multiple processes do NOT access shared resources at the same time in a conflicting
+way.
+
+ What is a Critical Section?
+A critical section is a part of code where:
+
+     Shared resource is accessed
+
+ Problem: Race Condition
+Occurs when:
+Two processes access shared resource simultaneously  incorrect results
+
+25 | P a g e
+3. Race Condition (Diagram)
+
+Process P1              Process P2
+                              
+
+Read Data            Read Data
+Modify               Modify
+
+Write                Write  Conflict
+
+4. Solution: Mutual Exclusion
+Only one process can enter critical section at a time.
+
+5. Synchronization Mechanisms
+You must implement ONE of the following (recommended: Semaphore)
+
+ 5.1 Semaphores (Recommended)
+
+What is Semaphore?
+A semaphore is a variable used to:
+
+     Control access to shared resource
+
+Types:                      Description
+                     0 or 1 (Lock/Unlock)
+          Type       Multiple resource access
+Binary Semaphore
+Counting Semaphore
+
+Working (Diagram)
+
+Semaphore = 1
+
+P1 enters  Semaphore = 0
+P2 tries  Blocked 
+P1 exits  Semaphore = 1
+P2 enters
+
+Implementation Idea
+
+class Semaphore {
+
+26 | P a g e
+       int value = 1;
+       synchronized void waitSem() {
+
+              while (value == 0) {
+                     try { wait(); } catch (Exception e) {}
+
+              }
+              value--;
+       }
+       synchronized void signalSem() {
+              value++;
+              notify();
+       }
+}
+
+6. Critical Section Simulation
+
+ Example Scenario
+Shared Resource = Printer
+
+P1  Printing...
+P2  Waiting
+
+GUI Simulation
+Display:
+
+Resource: Printer
+P1  Using
+P2  Waiting
+
+7. Inter-Process Communication (IPC)
+Processes need to communicate.
+You must implement at least ONE IPC method.
+
+ 7.1 Message Passing (Easiest)
+
+27 | P a g e
+Concept
+Process sends message to another process
+
+Diagram
+
+P1  Message Queue  P2
+
+Implementation Idea
+
+Queue<String> messageQueue = new LinkedList<>();
+// Send
+messageQueue.add("Hello from P1");
+// Receive
+String msg = messageQueue.poll();
+
+GUI Example
+
+P1  sends "Data"
+P2  receives "Data"
+
+ 7.2 Shared Memory (Optional)
+
+Concept
+Processes share a memory space
+
+ Requires synchronization
+
+Example
+
+String sharedData = "";
+sharedData = "Hello";
+
+8. GUI Requirements
+
+28 | P a g e
+Must Include:
+ Process Interaction Panel
+
+     Select Sender Process
+     Select Receiver Process
+     Send Message Button
+
+ Synchronization Panel
+
+     Resource (e.g., Printer)
+     Show:
+
+             o Which process is using
+             o Which is waiting
+
+ Logs Panel
+
+P1 acquired semaphore
+P2 waiting
+P1 released semaphore
+P2 entered critical section
+
+9. Sample Execution Scenario
+
+Synchronization
+
+    1. P1 enters critical section
+    2. P2 tries  blocked
+    3. P1 exits
+    4. P2 enters
+
+IPC
+
+P1 sends: Hello
+P2 receives: Hello
+
+10. Demo Requirements
+
+You MUST demonstrate:
+
+29 | P a g e
+ Critical section access
+ Blocking of processes
+ Semaphore working
+ IPC communication
+ Message transfer
+
+ 11. Common Mistakes
+
+ No actual blocking logic
+ Both processes accessing resource simultaneously
+ No GUI visualization
+ IPC without clear sender/receiver
+ No logs
+
+12. Design Tips
+     Use Thread.sleep() to simulate execution
+     Clearly show process states
+     Highlight active process
+     Use colors (optional):
+             o Green = Running
+             o Red = Waiting
+
+ 13. Deliverables for Module 4
+
+Code
+     Synchronization + IPC
+
+Screenshots
+     Resource usage
+     IPC communication
+
+30 | P a g e
+Report (1­2 pages)
+
+    Synchronization explanation
+    IPC method used
+    Example execution
+
+Additional feature
+
+Apart from these, I will divide some innovative ideas among all groups. You have to
+implement these ALONGWITH above requirements as per assigned topic: - You have to
+create 2 menus in your dashboard. One menu for above features and one menu for assigned
+topic:
+
+Submission Deadline                 6 May 2026
+                                    13 May 2026
+Module 1:                           20 May 2026
+PCB                                 3 June 2026
+Module 2:                           7 June 2026
+CPU Scheduling Algorithms
+Module 3:
+Memory Management
+Module 4:
+IPC
+Module 5:
+Unique feature assigned by teacher
+
+31 | P a g e
+

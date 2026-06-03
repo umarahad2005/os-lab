@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where pdftoppm *)",
+      "Bash(where pdftotext *)",
+      "Bash(where mutool *)",
+      "Bash(pdftotext -layout \"D:/university/5 semester/os/os lab/core_sim/OS_Project_Manual_BSCS-5A.pdf\" \"D:/university/5 semester/os/os lab/core_sim/manual.txt\")",
+      "Bash(javac -version)",
+      "Bash(java -version)",
+      "Bash(mkdir -p out)",
+      "Bash(javac -d out -sourcepath src src/Main.java src/model/*.java src/core/*.java src/ui/*.java)",
+      "Bash(javac -d out -sourcepath src src/SmokeTest.java)",
+      "Bash(java -cp out SmokeTest)",
+      "Bash(javac -d out/production/core_sim src/Main.java src/ui/Theme.java src/ui/IntroScreen.java src/ui/ControlPanel.java src/core/ProcessManager.java src/model/PCB.java src/model/ProcessState.java)",
+      "Bash(javac -d out -sourcepath src src/Main.java src/SmokeTest.java src/model/*.java src/core/*.java src/ui/*.java)"
+    ]
+  }
+}
